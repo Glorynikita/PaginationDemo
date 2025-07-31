@@ -1,6 +1,7 @@
 package com.example.Paginationdemo.controller;
 
 import com.example.Paginationdemo.dto.PageDto;
+import com.example.Paginationdemo.dto.PageResponseDto;
 import com.example.Paginationdemo.model.StudentDepartment;
 import com.example.Paginationdemo.repository.StudentRepo;
 import com.example.Paginationdemo.service.StudentService;
@@ -35,31 +36,16 @@ public class StudentController {
     }
 
     @GetMapping
-    public Page<StudentDepartment> getFilteredStudents(@RequestParam (required = false) String filter,
-                                                       @RequestParam (defaultValue = "0") int pageNo,
-                                                       @RequestParam (defaultValue =  "10") int pageSize) {
+    public PageResponseDto<StudentDepartment> getFilteredStudents(@RequestParam (required = false) String name,
+                                                                  @RequestParam (required = false) String departmentName,
+                                                                  @RequestParam (defaultValue = "0") int pageNo,
+                                                                  @RequestParam (defaultValue =  "10") int pageSize,
+                                                                  @RequestParam (required = false) String sortBy,
+                                                                  @RequestParam (required = false) String sortDir) {
 
-        Specification<StudentDepartment> sp = ((root, query, criteriaBuilder) -> null);
-
-        if (filter != null && !filter.isEmpty()) {
-            String[] filters = filter.split(",");
-            for (String f: filters) {
-                String[] parts = f.split(":");
-                if (parts.length == 2) {
-                    String key = parts[0].trim();
-                    String value = parts[1].trim();
-
-                    if(key.equalsIgnoreCase("name")){
-                        sp = sp.and(StudentSpecification.hasName(value));
-                    }
-                    if(key.equalsIgnoreCase(("departmentName"))) {
-                        sp = sp.and(StudentSpecification.hasName(value));
-                    }
-                }
-            }
-        }
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        return studentRepo.findAll(sp, pageable);
+       return studentService.getFilteredStudents(name, departmentName , pageNo, pageSize, sortBy, sortDir);
     }
+
+
 
 }
